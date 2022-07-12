@@ -13,4 +13,4 @@
 
 ## Release
 
-*   [apk, exe(android, window)](https://github.com/wayne931121/android_music_metadata_editor_python/releases/tag/0.1)
+*   [apk, exe (android, window)](https://github.com/wayne931121/android_music_metadata_editor_python/releases/tag/0.1)
