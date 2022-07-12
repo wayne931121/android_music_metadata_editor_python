@@ -1,0 +1,335 @@
+<Wayne_931121_Inna>
+# com.wayne931121.inna.music_metadata_editor
+# Invalid data after declaration : kv file 不允許自訂資產(屬性)名稱大寫，如 F : 1 (就像id也是小寫)
+# kivy rule該行不得放註釋(不可: <Rule> #some commits, 可以: <Rule> 換行 #some commits)
+# ScrollView螢幕能滑動(繼承)。ScrollView的屬性必須是: size_hint:(?, None), height:?.
+# text_size限制文本寬、高
+# 解決kivy中文按鈕水平至中對齊問題的四種方法:
+# 1. 調整 text_size 至 self.font_size*?
+# 2. 在文字前後加上空白
+# 3. 開FloatLayout放上兩顆按鈕，一顆用來顯示文字無背景
+# 4. 更換font_name
+# https://kivy.org/doc/stable/api-kivy.lang.html#module-kivy.lang
+<FCB>
+    id : FCB
+    font_size : app.width*0.06
+    size_hint : (1, 0.07)
+    
+    Button:
+        id : b
+        text : ""
+        ttext : root.label_text
+        background_color : root.button_color
+        on_release : app.Clock.schedule_once(lambda *args:root.on_click(self))
+        size_hint : (1, 1)
+        pos_hint : {"left":0, "top":1}
+    
+    Label:
+        id : l
+        text : root.display_text
+        markup : True
+        font_name : app.font
+        font_size : root.font_size
+        text_size : (self.width,self.texture_size[1])
+        size_hint : (1, None)
+        height : root.font_size
+        pos_hint : {"left":0, "center_y":0.5}
+        padding_x : -root.font_size*0.8
+        halign : "left"
+        valign : "top"
+        color :  (1,1,1,1)
+
+<MLabel@Label>
+    font_size: app.width*0.065
+    size_hint:1,None
+    height: self.font_size
+    font_name: app.font
+    text: ""
+    text_size: self.size
+    halign: "left" #配合text_size使用才會有效
+    valign: "middle"
+    
+<Br@MLabel>
+    height: app.height*0.01
+
+<Non@Button>
+    disabled: True
+    background_disabled_down: app.none
+    background_disabled_normal: app.none
+
+# https://kivy.org/doc/stable/api-kivy.uix.textinput.html
+<TInput@TextInput>
+    size_hint: 1,None
+    font_size: app.width*0.057
+    font_name: app.font
+    use_bubble: False
+    height: self.minimum_height
+    foreground_color: 1,1,1,1
+    background_normal: app.none
+    background_active: app.none
+    on_text: app.on_text(self)
+    canvas.after:
+        Color:
+            rgba: 1,1,0,0.9
+        Line:
+            width: 1.8
+            rectangle: (self.x, self.y, self.width, self.height)
+            
+<Input@StackLayout>
+    size_hint: 1,None
+    height: self.minimum_height
+    text: ""
+    Br
+    Br
+    MLabel:
+        text: root.text
+    Br
+    TInput:
+        run_my_script: app.register(root.text, self)
+        
+<ControlBar@FloatLayout>
+    id: ControlBar
+    size_hint: (1, 0.07)
+    pos_hint: {"left":0, "top":1}
+    fc_back_run: lambda:app.sm.switch_to(app.screens[0], direction='right')
+    fc_open_run: lambda:app.sm.switch_to(app.screens[2], direction='left')
+    fc_open_text: " 開啟 "
+    fc_choose_a_file_text: " 選擇檔案 "
+    canvas:
+        Color:
+            rgba: 1,1,1,0.5
+        Rectangle:
+            pos: 0, self.pos[1]
+            size: self.parent.width, self.size[1]
+    Button:
+        id: fc_back
+        size_hint: (0.15,1)
+        pos_hint: {"left":0, "top":1}
+        text:"◀"
+        font_size : app.width*0.1
+        font_name : app.Bt1Font # 將文字貼製Word即可知道字形
+        on_release : root.fc_back_run()
+    Label:
+        id: fc_choose_a_file
+        size_hint: (0.5,1)
+        # 這邊pos_hint不要用left、right，會造成不明的問題
+        # https://stackoverflow.com/questions/45097225/how-to-use-pos-hint-with-floatlayout-in-kivy
+        pos_hint: {"center_x":self.size_hint_x*0.79, "top":0.98} # 文字至中請調這邊的top
+        text_size: self.size
+        text: root.fc_choose_a_file_text
+        font_size : app.width*0.07
+        font_name : app.Bt1Font
+        halign : "left"
+        valign : "middle"
+    Button:
+        id: fc_open
+        size_hint: (0.2,1)
+        fpos_hint: {"right":1, "top":1} #不可將fpos_hint與pos_hint顛倒定義，否則fpos_hint將會隨著pos_hint一起改變，不是定數。
+        pos_hint: self.fpos_hint
+        text: root.fc_open_text
+        font_size : app.width*0.07
+        font_name : app.font
+        on_release : root.fc_open_run()
+
+<P>
+    id : P
+    font_size : app.width*0.06
+    size_hint : (1, None)
+    height : root.ids.l.texture_size[1]+self.font_size
+    halign : "left"
+    canvas.before:
+        Color:
+            rgba: (0,0,0,0)
+        Rectangle:
+            pos: (0, self.pos[1])
+            size: self.size
+    canvas.after:
+        Color:
+            rgba: (0,0,0,0)
+        Rectangle:
+            pos: (0, self.pos[1])
+            size: self.size
+    Label:
+        id : l
+        text : ""
+        markup : True
+        font_name : app.font
+        font_size : root.font_size
+        text_size : (self.width, None)
+        size_hint : (1, None)
+        height : self.texture_size[1]
+        pos_hint : {"left":0, "center_y":0.5}
+        padding_x : root.font_size*0.3
+        halign : "left"
+        valign : "top"
+        color :  (1,1,1,1)
+
+<Ap>
+    ScrollView:
+        do_scroll_y : True
+        size_hint : (1, 1)
+        FloatLayout : #FloatLayout，方便元件對齊。(在裡面的元件)
+            id: FL1
+            size_hint: 1, None
+            height: app.height
+            Button:
+                id: BT1
+                text: " 選擇檔案 " #文字前後加空白解決此中文字體水平至中對齊問題
+                font_name : app.font
+                font_size : app.width*0.1
+                size_hint: 0.5, 0.1
+                pos_hint: {"center_x":0.5, "center_y":0.5}
+                background_color: 1,1,1,1
+                background_down: app.none
+                on_release: app.Clock.schedule_once(lambda *args:app.sm.switch_to(app.screens[1], direction='left'))
+
+<Filechooser>
+    FloatLayout:
+        size_hint: 1,1
+        ScrollView:
+            id : FC
+            size_hint: (1, 0.93)
+            pos_hint: {"left":0, "top":0.93}
+            FloatLayout:
+                id : align
+                size_hint : (1, None)
+                height : root.ids.t2b.minimum_height+app.height*0.05
+                StackLayout:
+                    id : t2b
+                    size_hint : (0.9, None)
+                    height : app.height
+                    pos_hint : {"center_x":0.5, "top":1}
+                    # 這裡不能寫 "P" 或 "P:" ，因為在P的class內有這一句"self.l = self.ids.l"。
+                    # 如果是在Python內生成P，P的self.ids內會有l，但是如果是在這邊寫，P的ids內不會有l，
+                    # 所以會造成Python內創建(生成)Filechooser()造成錯誤: 
+                    # AttributeError: 'super' object has no attribute '__getattr__'
+                    # Python內生成的class才能用ids，這kv裡面調用Python class內的ids語句會造成錯誤。
+        ControlBar:
+            id: ControlBar
+            fc_open_run: lambda: app.Clock.schedule_once(lambda *args:root.Open())
+            fc_back_run: lambda: app.Clock.schedule_once(lambda *args:app.sm.switch_to(app.screens[0], direction='right'))
+            P1:
+                id : select_bar
+                pos_hint : {"center_x":0.5, "top":-0.0015}
+
+<Edit>
+    FloatLayout:
+        size_hint : (1, 1)
+        ScrollView:
+            id: scroll
+            do_scroll_y: True
+            size_hint: (1, 0.93)
+            pos_hint: {"left":0, "top":0.93}
+            FloatLayout :
+                id: fly
+                size_hint: 1, None
+                height: root.ids.EL1.minimum_height*2 #這樣ScrollView才能滾動看超出的範圍
+                StackLayout:
+                    id: EL1
+                    size_hint: 0.9, None
+                    pos_hint: {"center_x":0.5, "top":1}
+                    height: app.height #因為裡面的物件size_hint全是跟著外面父物件的height和size_hint
+                    Input:
+                        text: "Artist:"
+                    Br
+                    Br
+                    MLabel:
+                        text: "Image:"
+                    Br
+                    Image: #https://stackoverflow.com/questions/44617793/image-size-on-kivy
+                        id: img
+                        source: root.fn
+                        size_hint_y: 0.3
+                        allow_stretch: True
+                    Br
+                    Button:
+                        text: "　更改圖片　"
+                        font_name: app.font
+                        font_size: app.width*0.065
+                        size_hint: 0.3, 0.07
+                        on_release: app.Clock.schedule_once(lambda *args:root.add_image())
+                    Non:
+                        size_hint: 0.01, 0.07
+                    Button:
+                        text: "　移除圖片　"
+                        font_name: app.font
+                        font_size: app.width*0.065
+                        size_hint: 0.3, 0.07
+                        on_release: app.Clock.schedule_once(lambda *args:root.remove_image())
+                    Non:
+                        size_hint: 0.01, 0.07
+                    Button:
+                        text: "　下載圖片　"
+                        font_name: app.font
+                        font_size: app.width*0.065
+                        size_hint: 0.3, 0.07
+                        on_release: app.Clock.schedule_once(lambda *args:root.download_image())
+                    Input:
+                        text: "Album:"
+                    Input:
+                        text: "Album Artist:"
+                    Input:
+                        text: "Title:"
+                    Input:
+                        text: "Track Number:"
+                    Input:
+                        text: "Date:"
+        ControlBar:
+            id: ControlBar
+            fc_open_text: " 儲存 "
+            fc_choose_a_file_text: " 編輯 "
+            fc_back_run: lambda: app.Clock.schedule_once(lambda *args:app.sm.switch_to(app.screens[1], direction='right'))
+            fc_open_run: root.stored
+
+<Done>
+    FloatLayout:
+        size_hint : (1, 1)
+        ScrollView:
+            do_scroll_y : True
+            size_hint : (1, 1)
+            pos_hint: {"left":0, "top":1}
+            FloatLayout :
+                id: FL1
+                size_hint: 1, None
+                height: app.height
+                StackLayout: # StackLayout從上到下的排版。StackLayout內的物件不可使用pos_hint，這裡pos_hint是相對於外面FloatLayout做的定位。
+                    id: SL1
+                    size_hint: 0.5, None
+                    height: self.minimum_height
+                    pos_hint: {"center_x":0.5, "center_y":0.5}
+                    Br
+                    MLabel:
+                        id: ML
+                        text: "處理中..."
+                    Br
+                    Br
+                    Button:
+                        text: " 確定 "
+                        font_name: app.font
+                        font_size: app.width*0.065
+                        size_hint: 1, None
+                        height: root.ids.ML.height*1.8
+                        on_release: app.Clock.schedule_once(lambda *args:app.sm.switch_to(app.screens[0], direction="left"))
+        ControlBar:
+            id: ControlBar
+            fc_open_text: ""
+            fc_choose_a_file_text: ""
+            fc_back_run: lambda: app.Clock.schedule_once(lambda *args:app.sm.switch_to(app.Edit, direction='right'))
+            fc_open_run: lambda:1
+            run: self.remove_widget(self.ids.fc_open)
+
+<copy_paste>
+    size_hint: (0.5, None)
+    height: app.height*0.1
+    pos_hint: {"center_x": 0.5, "top": 0.6}
+    Bubble:
+        id: wg
+        size_hint: (1,1)
+        pos_hint: {"center_x": .5, "top": 1}
+        arrow_pos: "bottom_left"
+        BubbleButton:
+            text: 'Copy'
+            on_release: app.copy_paste_manager.copy()
+        BubbleButton:
+            text: 'Paste'
+            on_release: app.copy_paste_manager.paste()
