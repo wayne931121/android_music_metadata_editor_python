@@ -10,3 +10,7 @@
 *   Python
 *   Kivy
 *   Eyed3
+
+## Release
+
+*   [apk, exe(android, window)](https://github.com/wayne931121/android_music_metadata_editor_python/releases/tag/0.1)
